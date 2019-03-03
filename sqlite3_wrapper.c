@@ -4,8 +4,8 @@
 #include <string.h>
 
 #define WINVER 0x0501
-#define _WIN32_WINNT 0x0501
-#include <windef.h>
+//#define _WIN32_WINNT 0x0501
+//#include <windef.h>
 #include <windows.h>
 #include <shlobj.h>
 #include <shlwapi.h>
@@ -17,6 +17,10 @@
 // GC parameters
 #define MAX_GC_ITEM_COUNT 100
 #define GC_EXEC_LIMIT 90
+
+#define APIEXPORT __declspec(dllexport) 
+
+extern int RegisterExtensionFunctions(sqlite3 *db);
 
 // MetaTrader4 TERMINAL_DATA_PATH
 static wchar_t *terminal_data_path = NULL;
@@ -146,7 +150,7 @@ static wchar_t *build_db_path (const wchar_t *db_filename)
         return NULL;
     }
 
-    if (my_wcscat (buf, L"\\MQL4\\Files\\SQLite") == 0) {
+    if (my_wcscat (buf, L"\\MQL4\\Files") == 0) {
         return NULL;
     }
 
@@ -189,7 +193,7 @@ static BOOL set_terminal_data_path(const wchar_t *path)
     return terminal_data_path != NULL;
 }
 
-int sqlite_initialize(const wchar_t *term_data_path)
+APIEXPORT int sqlite_initialize(const wchar_t *term_data_path)
 {
     if (!set_terminal_data_path (term_data_path)) {
         return ERROR_INVALID_TERM_DATA_DIR;
@@ -198,7 +202,7 @@ int sqlite_initialize(const wchar_t *term_data_path)
     return INIT_SUCCESS;
 }
 
-void sqlite_finalize()
+APIEXPORT void sqlite_finalize()
 {
     if (terminal_data_path) {
         free (terminal_data_path);
@@ -211,7 +215,7 @@ void sqlite_finalize()
     }
 }
 
-const wchar_t *__stdcall sqlite_get_fname (const wchar_t *db_filename)
+APIEXPORT const wchar_t *__stdcall sqlite_get_fname (const wchar_t *db_filename)
 {
     wchar_t *db_path = build_db_path (db_filename);
 
@@ -226,7 +230,7 @@ const wchar_t *__stdcall sqlite_get_fname (const wchar_t *db_filename)
 }
 
 
-int __stdcall sqlite_exec (const wchar_t *db_filename, const wchar_t *sql)
+APIEXPORT int __stdcall sqlite_exec (const wchar_t *db_filename, const wchar_t *sql)
 {
     sqlite3 *s;
     int res;
@@ -262,7 +266,7 @@ int __stdcall sqlite_exec (const wchar_t *db_filename, const wchar_t *sql)
 /*
  * return 1 if table exists in database, 0 oterwise. -ERROR returned on error.
  */
-int __stdcall sqlite_table_exists (const wchar_t const *db_filename, const wchar_t const *table_name)
+APIEXPORT int __stdcall sqlite_table_exists (const wchar_t const *db_filename, const wchar_t const *table_name)
 {
     sqlite3 *s;
     sqlite3_stmt *stmt;
@@ -313,7 +317,7 @@ int __stdcall sqlite_table_exists (const wchar_t const *db_filename, const wchar
  * Perform query and pack results in internal structure. Routine returns amount of data fetched and
  * integer handle which can be used to sqlite_get_data. On error, return -SQLITE_ERROR.
  */
-int __stdcall sqlite_query (const wchar_t *db_filename, const wchar_t *sql, int* cols)
+APIEXPORT int __stdcall sqlite_query (const wchar_t *db_filename, const wchar_t *sql, int* cols)
 {
     sqlite3 *s;
     sqlite3_stmt *stmt;
@@ -347,7 +351,7 @@ int __stdcall sqlite_query (const wchar_t *db_filename, const wchar_t *sql, int*
     return (int)result;
 }
 
-int __stdcall sqlite_reset (int handle)
+APIEXPORT int __stdcall sqlite_reset (int handle)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
@@ -360,7 +364,7 @@ int __stdcall sqlite_reset (int handle)
     return ret == SQLITE_OK ? 1 : 0;
 }
 
-int __stdcall sqlite_bind_int (int handle, int col, int bind_value)
+APIEXPORT int __stdcall sqlite_bind_int (int handle, int col, int bind_value)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
@@ -373,7 +377,7 @@ int __stdcall sqlite_bind_int (int handle, int col, int bind_value)
     return ret == SQLITE_OK ? 1 : 0;
 }
 
-int __stdcall sqlite_bind_int64 (int handle, int col, __int64 bind_value)
+APIEXPORT int __stdcall sqlite_bind_int64 (int handle, int col, __int64 bind_value)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
@@ -386,7 +390,7 @@ int __stdcall sqlite_bind_int64 (int handle, int col, __int64 bind_value)
     return ret == SQLITE_OK ? 1 : 0;
 }
 
-int __stdcall sqlite_bind_double (int handle, int col, double bind_value)
+APIEXPORT int __stdcall sqlite_bind_double (int handle, int col, double bind_value)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
@@ -399,7 +403,7 @@ int __stdcall sqlite_bind_double (int handle, int col, double bind_value)
     return ret == SQLITE_OK ? 1 : 0;
 }
 
-int __stdcall sqlite_bind_text (int handle, int col, const wchar_t* bind_value)
+APIEXPORT int __stdcall sqlite_bind_text (int handle, int col, const wchar_t* bind_value)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
@@ -412,7 +416,7 @@ int __stdcall sqlite_bind_text (int handle, int col, const wchar_t* bind_value)
     return ret == SQLITE_OK ? 1 : 0;
 }
 
-int __stdcall sqlite_bind_null (int handle, int col)
+APIEXPORT int __stdcall sqlite_bind_null (int handle, int col)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
@@ -425,10 +429,35 @@ int __stdcall sqlite_bind_null (int handle, int col)
     return ret == SQLITE_OK ? 1 : 0;
 }
 
+APIEXPORT int __stdcall sqlite_bind_param_count(int handle)
+{
+  struct query_result *res = (struct query_result*)handle;
+  int ret;
+
+  if (!res)
+    return 0;
+
+  return sqlite3_bind_parameter_count(res->stmt);
+}
+
+APIEXPORT int __stdcall sqlite_bind_param_index(int handle, const wchar_t* param_name)
+{
+  struct query_result *res = (struct query_result*)handle;
+
+  if (!res)
+    return 0;
+
+  const char* param = unicode_to_ansi_string(param_name);
+  int ret = sqlite3_bind_parameter_index(res->stmt, param);
+  my_free((void *)param);
+
+  return ret;
+}
+
 /*
  * Return 1 if next row fetched, 0 if end of resultset reached
  */
-int __stdcall sqlite_next_row (int handle)
+APIEXPORT int __stdcall sqlite_next_row (int handle)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
@@ -442,8 +471,7 @@ int __stdcall sqlite_next_row (int handle)
 }
 
 
-
-const wchar_t* __stdcall sqlite_get_col (int handle, int col)
+APIEXPORT const wchar_t* __stdcall sqlite_get_col (int handle, int col)
 {
     struct query_result *data = (struct query_result*)handle;
 
@@ -464,7 +492,7 @@ const wchar_t* __stdcall sqlite_get_col (int handle, int col)
     return sqlite3_column_text16 (data->stmt, col);
 }
 
-int __stdcall sqlite_get_col_int (int handle, int col)
+APIEXPORT int __stdcall sqlite_get_col_int (int handle, int col)
 {
     struct query_result *data = (struct query_result*)handle;
 
@@ -474,7 +502,7 @@ int __stdcall sqlite_get_col_int (int handle, int col)
     return sqlite3_column_int (data->stmt, col);
 }
 
-__int64 __stdcall sqlite_get_col_int64 (int handle, int col)
+APIEXPORT __int64 __stdcall sqlite_get_col_int64 (int handle, int col)
 {
     struct query_result *data = (struct query_result*)handle;
 
@@ -484,7 +512,7 @@ __int64 __stdcall sqlite_get_col_int64 (int handle, int col)
     return sqlite3_column_int64 (data->stmt, col);
 }
 
-double __stdcall sqlite_get_col_double (int handle, int col)
+APIEXPORT double __stdcall sqlite_get_col_double (int handle, int col)
 {
     struct query_result *data = (struct query_result*)handle;
 
@@ -494,7 +522,7 @@ double __stdcall sqlite_get_col_double (int handle, int col)
     return sqlite3_column_double (data->stmt, col);
 }
 
-int __stdcall sqlite_free_query (int handle)
+APIEXPORT int __stdcall sqlite_free_query (int handle)
 {
     struct query_result *data = (struct query_result*)handle;
 
@@ -510,13 +538,13 @@ int __stdcall sqlite_free_query (int handle)
 }
 
 
-void __stdcall sqlite_set_busy_timeout (int ms)
+APIEXPORT void __stdcall sqlite_set_busy_timeout (int ms)
 {
     busy_timeout = ms;
 }
 
 
-void __stdcall sqlite_set_journal_mode (const wchar_t* mode)
+APIEXPORT void __stdcall sqlite_set_journal_mode (const wchar_t* mode)
 {
     if (journal_statement) {
         free (journal_statement);

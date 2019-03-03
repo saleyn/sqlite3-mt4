@@ -1,2 +1,5 @@
 *.o
 *.ex4
+.vs
+*.vcxproj.filters
+project/build
