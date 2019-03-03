@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3_wrapper", "sqlite3_wrapper.vcxproj", "{07ED99CA-0A95-4B4F-A552-519EED26CA57}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "..\sqlite3\sqlite3.vcxproj", "{5B22B29E-2279-4822-B62D-9E63342AEACE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{07ED99CA-0A95-4B4F-A552-519EED26CA57}.Release|x64.Build.0 = Release|x64
 		{07ED99CA-0A95-4B4F-A552-519EED26CA57}.Release|x86.ActiveCfg = Release|Win32
 		{07ED99CA-0A95-4B4F-A552-519EED26CA57}.Release|x86.Build.0 = Release|Win32
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Debug|x64.ActiveCfg = Debug|x64
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Debug|x64.Build.0 = Debug|x64
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Debug|x86.ActiveCfg = Debug|Win32
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Debug|x86.Build.0 = Debug|Win32
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Release|x64.ActiveCfg = Release|x64
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Release|x64.Build.0 = Release|x64
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Release|x86.ActiveCfg = Release|Win32
+		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
