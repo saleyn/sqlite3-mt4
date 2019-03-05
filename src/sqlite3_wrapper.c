@@ -391,7 +391,20 @@ APIEXPORT BOOL WINAPI sqlite_bind_double (int handle, int col, double bind_value
     return ret == SQLITE_OK;
 }
 
-APIEXPORT BOOL WINAPI sqlite_bind_text (int handle, int col, const wchar_t* bind_value)
+APIEXPORT BOOL WINAPI sqlite_bind_text(int handle, int col, const char* bind_value)
+{
+    struct query_result *res = (struct query_result*)handle;
+    int ret;
+
+    if (!res)
+        return 0;
+
+    ret = sqlite3_bind_text(res->stmt, col, bind_value, -1, SQLITE_STATIC);
+
+    return ret == SQLITE_OK;
+}
+
+APIEXPORT BOOL WINAPI sqlite_bind_text16(int handle, int col, const wchar_t* bind_value)
 {
     struct query_result *res = (struct query_result*)handle;
     int ret;
