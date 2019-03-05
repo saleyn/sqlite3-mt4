@@ -2,4 +2,5 @@
 *.ex4
 .vs
 *.vcxproj.filters
-project/build
+sqlite3.dll
+build

@@ -225,6 +225,8 @@ APIEXPORT void WINAPI sqlite_close(sqlite3* db) { if (db) sqlite3_close(db); }
 
 APIEXPORT int  WINAPI sqlite_errcode(sqlite3* db) { return sqlite3_errcode(db); }
 
+APIEXPORT int  WINAPI sqlite_changes(sqlite3* db) { return sqlite3_changes(db); }
+
 APIEXPORT const wchar_t* WINAPI sqlite_errmsg (sqlite3* db)
 {
   return sqlite3_errmsg16(db);

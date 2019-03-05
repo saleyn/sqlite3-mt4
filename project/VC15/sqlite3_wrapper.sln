@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3_wrapper", "sqlite3_wrapper.vcxproj", "{07ED99CA-0A95-4B4F-A552-519EED26CA57}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3_wrapper", "sqlite3_wrapper\sqlite3_wrapper.vcxproj", "{07ED99CA-0A95-4B4F-A552-519EED26CA57}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "..\sqlite3\sqlite3.vcxproj", "{5B22B29E-2279-4822-B62D-9E63342AEACE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcxproj", "{5B22B29E-2279-4822-B62D-9E63342AEACE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3_dll", "sqlite3_dll\sqlite3_dll.vcxproj", "{9992B29E-9999-4822-B62D-9993342AE999}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Release|x64.Build.0 = Release|x64
 		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Release|x86.ActiveCfg = Release|Win32
 		{5B22B29E-2279-4822-B62D-9E63342AEACE}.Release|x86.Build.0 = Release|Win32
+		{9992B29E-9999-4822-B62D-9993342AE999}.Debug|x64.ActiveCfg = Debug|x64
+		{9992B29E-9999-4822-B62D-9993342AE999}.Debug|x64.Build.0 = Debug|x64
+		{9992B29E-9999-4822-B62D-9993342AE999}.Debug|x86.ActiveCfg = Debug|Win32
+		{9992B29E-9999-4822-B62D-9993342AE999}.Debug|x86.Build.0 = Debug|Win32
+		{9992B29E-9999-4822-B62D-9993342AE999}.Release|x64.ActiveCfg = Release|x64
+		{9992B29E-9999-4822-B62D-9993342AE999}.Release|x64.Build.0 = Release|x64
+		{9992B29E-9999-4822-B62D-9993342AE999}.Release|x86.ActiveCfg = Release|Win32
+		{9992B29E-9999-4822-B62D-9993342AE999}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
