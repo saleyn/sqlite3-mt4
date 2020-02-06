@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef WINVER
 #define WINVER 0x0501
+#endif
 //#define _WIN32_WINNT 0x0501
 //#include <windef.h>
 #include <windows.h>
@@ -21,13 +23,26 @@
 #define MAX_GC_ITEM_COUNT 100
 #define GC_EXEC_LIMIT 90
 
-#define APIEXPORT __declspec(dllexport) 
+#ifndef STATIC_MT4LIB
+# ifdef SQLITE3WRAPPER_EXPORTS
+#   define APIEXPORT __declspec(dllexport)
+# else
+#   define APIEXPORT __declspec(dllimport)
+# endif
+#else
+# define APIEXPORT
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern int RegisterExtensionFunctions(sqlite3 *db);
 
 APIEXPORT int            WINAPI sqlite_initialize   (const wchar_t* term_data_path);
 APIEXPORT BOOL           WINAPI sqlite_get_fname    (const wchar_t* db_filename, wchar_t* path, int pathlen);
 APIEXPORT sqlite3*       WINAPI sqlite_open         (const wchar_t* db_filename);
+APIEXPORT sqlite3*       WINAPI sqlite_open_v2      (const wchar_t* db_filename, unsigned args);
 APIEXPORT void           WINAPI sqlite_close        (sqlite3* db);
 APIEXPORT const wchar_t* WINAPI sqlite_errmsg       (sqlite3* db);
 APIEXPORT int            WINAPI sqlite_errcode      (sqlite3* db);
@@ -56,6 +71,7 @@ APIEXPORT int            WINAPI sqlite_free_query   (int handle);
 APIEXPORT void           WINAPI sqlite_set_busy_timeout(int ms);
 APIEXPORT int            WINAPI sqlite_set_journal_mode(const wchar_t* mode);
 
+/*
 #ifdef DEBUG_TRACE
 #define DEBUG_OUTPUT(fmt, ...) \
   do { char buf[256]; snprintf(buf, sizeof(buf), fmt, __VA_ARGS__); OutputDebugStringA(buf); } \
@@ -66,4 +82,9 @@ APIEXPORT int            WINAPI sqlite_set_journal_mode(const wchar_t* mode);
 #else
 #define DEBUG_OUTPUT(fmt, ...)
 #define DEBUG_OUTPUT_IF(cond, fmt, ...)
+#endif
+*/
+
+#ifdef __cplusplus
+}
 #endif

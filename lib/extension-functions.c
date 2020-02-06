@@ -684,8 +684,8 @@ static void replicateFunc(sqlite3_context *context, int argc, sqlite3_value **ar
 
     nLen  = sqlite3_value_bytes(argv[0]);
     nTLen = nLen*iCount;
-    z=sqlite3_malloc(nTLen+1);
-    zo=sqlite3_malloc(nLen+1);
+    z=sqlite3_malloc((int)nTLen+1);
+    zo=sqlite3_malloc((int)nLen+1);
     if (!z || !zo){
       sqlite3_result_error_nomem(context);
       if (z) sqlite3_free(z);

@@ -1,5 +1,10 @@
+#include "debug.h"
 #include "sqlite3_wrapper.h"
 #include <assert.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // MetaTrader4 TERMINAL_DATA_PATH
 static wchar_t terminal_data_path[2048];
@@ -9,6 +14,8 @@ static int busy_timeout = 1000;
 
 // pragma for journal mode
 static char journal_statement[256];
+
+static int debug;
 
 struct query_result {
     sqlite3 *s;
@@ -150,19 +157,21 @@ static wchar_t* my_wcscat (wchar_t** dst, const wchar_t* src)
 static wchar_t* build_db_path (const wchar_t* db_filename, wchar_t* path, int pathlen)
 {
     // if path is absolute, just return it, assuming it holds full db path
-    if (!PathIsRelativeW (db_filename)) {
+    if (!PathIsRelativeW (db_filename) || (db_filename && db_filename[0] == L'/')) {
         wcscpy_s(path, pathlen, db_filename);
         return path;
     }
 
-    int n = _scwprintf(path, L"%s\\MQL4\\Files", terminal_data_path);
+    int n = _scwprintf(path, L"%s/MQL4/Files", terminal_data_path);
     if (n < 0 || n > pathlen)
         return NULL;
-
+    
     if (!directory_exists (path))
         CreateDirectoryW (path, NULL);
 
-    int len = _scwprintf(path+n, L"\\%s", db_filename);
+    int len = _scwprintf(path+n, L"/%s", db_filename);
+    for (wchar_t* p=path+n; p; ++p)
+      if (*p == L'\\') *p = L'/';
 
     return len < 0 || n + len > pathlen ? NULL : path;
 }
@@ -182,13 +191,24 @@ static BOOL set_terminal_data_path(const wchar_t* path)
     if (!directory_exists (path))
         return FALSE;
 
-    return wcscpy_s(terminal_data_path, sizeof(terminal_data_path)/sizeof(wchar_t), path) == 0;
+    terminal_data_path[0] = L'\0';
+    auto res = wcscpy_s(terminal_data_path, sizeof(terminal_data_path)/sizeof(wchar_t), path) == 0;
+    
+    for (wchar_t* p = terminal_data_path; *p; ++p)
+      if (*p == L'\\') *p = L'/';
+
+    return TRUE;
 }
 
 void error_log_callback(void* arg, int err_code, const char* err_msg) {
   char buf[256];
   snprintf(buf, sizeof(buf), "Error in SQLite: (%d) %s", err_code, err_msg);
   OutputDebugStringA(buf);
+}
+
+APIEXPORT int WINAPI sqlite_test()
+{
+  return 1;
 }
 
 APIEXPORT int WINAPI sqlite_initialize(const wchar_t* term_data_path)
@@ -203,22 +223,51 @@ APIEXPORT BOOL WINAPI sqlite_get_fname (const wchar_t* db_filename, wchar_t* pat
 
 APIEXPORT sqlite3* WINAPI sqlite_open (const wchar_t* db_filename)
 {
-    wchar_t path[1024];
-    const wchar_t* db_path = build_db_path(db_filename, path, sizeof(path)/sizeof(wchar_t));
+  wchar_t path[1024];
+  const wchar_t* db_path = build_db_path(db_filename, path, sizeof(path) / sizeof(wchar_t));
 
-    if (!db_path)
-      return NULL;
+  if (!db_path)
+    return NULL;
 
-    sqlite3* s;
-    int res = sqlite3_open16(db_path, &s);
+  sqlite3* s;
+  int res = sqlite3_open16(db_path, &s);
 
-    if (res != SQLITE_OK)
-      return NULL;
+  if (res != SQLITE_OK)
+    return NULL;
 
-    tune_db_handler(s);
+  tune_db_handler(s);
 
-    sqlite3_config(SQLITE_CONFIG_LOG, error_log_callback, NULL);
-    return s;
+  sqlite3_config(SQLITE_CONFIG_LOG, error_log_callback, NULL);
+  return s;
+}
+
+APIEXPORT sqlite3* WINAPI sqlite_open_v2(const wchar_t* db_filename, unsigned flags)
+{
+  wchar_t path[1024];
+  const wchar_t* db_path = build_db_path(db_filename, path, sizeof(path) / sizeof(wchar_t));
+
+  if (!db_path)
+    return NULL;
+
+  const char* paths = unicode_to_ansi_alloc(path);
+  if (!paths)
+    return NULL;
+
+  if (flags == 0)
+    flags = SQLITE_OPEN_READONLY;
+
+  sqlite3* s;
+  int res = sqlite3_open_v2(paths, &s, flags, NULL);
+
+  my_free((void*)paths);
+
+  if (res != SQLITE_OK)
+    return NULL;
+
+  tune_db_handler(s);
+
+  sqlite3_config(SQLITE_CONFIG_LOG, error_log_callback, NULL);
+  return s;
 }
 
 APIEXPORT void WINAPI sqlite_close(sqlite3* db) { if (db) sqlite3_close(db); }
@@ -229,7 +278,7 @@ APIEXPORT int  WINAPI sqlite_changes(sqlite3* db) { return sqlite3_changes(db); 
 
 APIEXPORT const wchar_t* WINAPI sqlite_errmsg (sqlite3* db)
 {
-  return sqlite3_errmsg16(db);
+  return (const wchar_t* )sqlite3_errmsg16(db);
 }
 
 APIEXPORT int WINAPI sqlite_exec(sqlite3* db, const wchar_t* sql)
@@ -307,6 +356,8 @@ APIEXPORT int WINAPI sqlite_query(sqlite3* db, const wchar_t* sql, int* cols)
       return -res;
 
     struct query_result* result = (struct query_result*)malloc (sizeof (struct query_result));
+    if (!result)
+      return -SQLITE_NOMEM;
     result->s    = NULL;
     result->stmt = stmt;
     *cols = sqlite3_column_count(stmt);
@@ -323,10 +374,10 @@ APIEXPORT int WINAPI sqlite_query2(const wchar_t* db_filename, const wchar_t* sq
   if (s == NULL)
       return 0;
 
-  DEBUG_OUTPUT("sqlite_query2: Database open -> %d", (int)s);
+  DEBUG_OUTPUT(debug, "sqlite_query2: Database open -> %d", (int)s);
   int res = sqlite_query(s, sql, cols);
 
-  DEBUG_OUTPUT("sqlite_query2: sqlite_query -> %d (cols=%d)", res, *cols);
+  DEBUG_OUTPUT(debug, "sqlite_query2: sqlite_query -> %d (cols=%d)", res, *cols);
 
   if (res < 0) {
       sqlite3_close(s);
@@ -465,7 +516,7 @@ APIEXPORT int WINAPI sqlite_step(int handle)
 
     int ret = sqlite3_step (res->stmt);
 
-    DEBUG_OUTPUT_IF(ok != SQLITE_DONE && ok != SQLITE_ROW, "SQLite step returned: %d", ret);
+    DEBUG_OUTPUT((ret != SQLITE_DONE && ret != SQLITE_ROW), "SQLite step returned: %d", ret);
 
     return ret;
 }
@@ -489,7 +540,7 @@ APIEXPORT const wchar_t* WINAPI sqlite_get_col (int handle, int col)
     // So, it's safe to just return pointer, as mql will copy string's content into it's own buffer
     // (according to docs).
 
-    return sqlite3_column_text16 (data->stmt, col);
+    return (const wchar_t*)sqlite3_column_text16 (data->stmt, col);
 }
 
 APIEXPORT int WINAPI sqlite_get_col_int (int handle, int col)
@@ -561,3 +612,7 @@ APIEXPORT int WINAPI sqlite_set_journal_mode (const wchar_t* mode)
 
     return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif
