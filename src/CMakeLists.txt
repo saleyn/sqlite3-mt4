@@ -3,23 +3,23 @@ cmake_minimum_required(VERSION 3.0)
 #-------------------------------------------------------------------------------
 # Target projects:
 #-------------------------------------------------------------------------------
-add_library(mqt-splite3 SHARED
+add_library(mqt-sqlite3 SHARED
   ../lib/sqlite3.c
   ../lib/extension-functions.c
   sqlite3_wrapper.c
 )
-target_include_directories(mqt-splite3 PUBLIC "${CMAKE_SOURCE_DIR}/lib")
-target_compile_definitions(mqt-splite3 PUBLIC _USRDLL _WINDLL SQLITE3WRAPPER_EXPORTS)
-#target_compile_options(mqt-splite3 PRIVATE /wd26451 /wd6011 /wd4244)
-target_link_libraries(mqt-splite3 Shlwapi)
-set_target_properties(mqt-splite3 PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
+target_include_directories(mqt-sqlite3 PUBLIC "${CMAKE_SOURCE_DIR}/lib")
+target_compile_definitions(mqt-sqlite3 PUBLIC _USRDLL _WINDLL SQLITE3WRAPPER_EXPORTS)
+#target_compile_options(mqt-sqlite3 PRIVATE /wd26451 /wd6011 /wd4244)
+target_link_libraries(mqt-sqlite3 Shlwapi)
+set_target_properties(mqt-sqlite3 PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 if(WIN32)
   if (CMAKE_CL_64 OR CMAKE_GENERATOR_PLATFORM EQUAL "x64")
     MESSAGE("==> 64 bit build")
-    set_target_properties(mqt-splite3 PROPERTIES SUFFIX ".x64.dll")
+    set_target_properties(mqt-sqlite3 PROPERTIES SUFFIX ".x64.dll")
   else()
     MESSAGE("==> 32 bit build")
-    set_target_properties(mqt-splite3 PROPERTIES SUFFIX ".x86.dll")
+    set_target_properties(mqt-sqlite3 PROPERTIES SUFFIX ".x86.dll")
   endif()
 endif()
 
@@ -45,5 +45,5 @@ set_target_properties(sqlite3 PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 
 # "RUNTIME" forces to copy the *.dll only and not *.lib file
 # If the *.lib is needed then use the "ARCHIVE" specification
-install(TARGETS mqt-splite3 sqlite3_dll sqlite3 RUNTIME DESTINATION .)
-#install(TARGETS mqt-splite3 sqlite3_dll sqlite3 RUNTIME DESTINATION bin)
+install(TARGETS mqt-sqlite3 sqlite3_dll sqlite3 RUNTIME DESTINATION .)
+#install(TARGETS mqt-sqlite3 sqlite3_dll sqlite3 RUNTIME DESTINATION bin)
