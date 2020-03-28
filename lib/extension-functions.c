@@ -202,7 +202,7 @@ typedef uint16_t        u16;
 typedef int64_t         i64;
 
 static char *sqlite3StrDup( const char *z ) {
-    char *res = sqlite3_malloc( strlen(z)+1 );
+    char *res = (char*)sqlite3_malloc( strlen(z)+1 );
     return strcpy( res, z );
 }
 
@@ -1317,7 +1317,7 @@ static void reverseFunc(sqlite3_context *context, int argc, sqlite3_value **argv
   const char *zt;
   char *rz;
   char *rzt;
-  int l = 0;
+  long l = 0;
   int i = 0;
 
   assert( 1==argc );

@@ -138,7 +138,7 @@ static const wchar_t* ansi_to_unicode_alloc(const char *ansi)
 
 static wchar_t* my_wcscat (wchar_t** dst, const wchar_t* src)
 {
-    int dst_buf_size = 0;
+    long dst_buf_size = 0;
 
     if (*dst == NULL) {
         dst_buf_size = wcslen (src) + 1;
@@ -204,11 +204,6 @@ void error_log_callback(void* arg, int err_code, const char* err_msg) {
   char buf[256];
   snprintf(buf, sizeof(buf), "Error in SQLite: (%d) %s", err_code, err_msg);
   OutputDebugStringA(buf);
-}
-
-APIEXPORT int WINAPI sqlite_test()
-{
-  return 1;
 }
 
 APIEXPORT int WINAPI sqlite_initialize(const wchar_t* term_data_path)
@@ -342,7 +337,7 @@ APIEXPORT int WINAPI sqlite_table_exists2(const wchar_t* db_filename, const wcha
   return res;
 }
 
-APIEXPORT int WINAPI sqlite_query(sqlite3* db, const wchar_t* sql, int* cols)
+APIEXPORT long WINAPI sqlite_query(sqlite3* db, const wchar_t* sql, int* cols)
 {
     assert(cols);
 
@@ -351,7 +346,7 @@ APIEXPORT int WINAPI sqlite_query(sqlite3* db, const wchar_t* sql, int* cols)
       return -SQLITE_ERROR;
 
     sqlite3_stmt* stmt;
-    int res = sqlite3_prepare16(db, sql, wcslen(sql) * sizeof(wchar_t), &stmt, NULL);
+    int res = sqlite3_prepare16(db, sql, (int)(wcslen(sql) * sizeof(wchar_t)), &stmt, NULL);
     if (res != SQLITE_OK)
       return -res;
 
@@ -361,21 +356,21 @@ APIEXPORT int WINAPI sqlite_query(sqlite3* db, const wchar_t* sql, int* cols)
     result->s    = NULL;
     result->stmt = stmt;
     *cols = sqlite3_column_count(stmt);
-    return (int)result;
+    return (long)result;
 }
 
 /*
 * Perform query and pack results in internal structure. Routine returns amount of data fetched and
 * integer handle which can be used to sqlite_get_data. On error, return -SQLITE_ERROR.
 */
-APIEXPORT int WINAPI sqlite_query2(const wchar_t* db_filename, const wchar_t* sql, int* cols)
+APIEXPORT long WINAPI sqlite_query2(const wchar_t* db_filename, const wchar_t* sql, int* cols)
 {
   sqlite3* s = sqlite_open(db_filename);
   if (s == NULL)
       return 0;
 
-  DEBUG_OUTPUT(debug, "sqlite_query2: Database open -> %d", (int)s);
-  int res = sqlite_query(s, sql, cols);
+  DEBUG_OUTPUT(debug, "sqlite_query2: Database open -> %p", (long)s);
+  long res = sqlite_query(s, sql, cols);
 
   DEBUG_OUTPUT(debug, "sqlite_query2: sqlite_query -> %d (cols=%d)", res, *cols);
 
@@ -521,6 +516,16 @@ APIEXPORT int WINAPI sqlite_step(int handle)
     return ret;
 }
 
+
+APIEXPORT int WINAPI sqlite_get_col_type(int handle, int col)
+{
+  struct query_result* data = (struct query_result*)handle;
+
+  if (!data)
+    return -1;
+
+  return sqlite3_column_type(data->stmt, col);
+}
 
 APIEXPORT const wchar_t* WINAPI sqlite_get_col (int handle, int col)
 {

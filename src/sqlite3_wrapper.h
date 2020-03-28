@@ -51,8 +51,8 @@ APIEXPORT int            WINAPI sqlite_exec         (sqlite3* db, const wchar_t*
 APIEXPORT int            WINAPI sqlite_exec2        (const wchar_t* db_filename, const wchar_t* sql);
 APIEXPORT int            WINAPI sqlite_table_exists (sqlite3* db, const wchar_t* table_name);
 APIEXPORT int            WINAPI sqlite_table_exists2(const wchar_t* db_filename, const wchar_t* table_name);
-APIEXPORT int            WINAPI sqlite_query        (sqlite3* db, const wchar_t* sql, int* cols);
-APIEXPORT int            WINAPI sqlite_query2       (const wchar_t* db_filename, const wchar_t* sql, int* cols);
+APIEXPORT long           WINAPI sqlite_query        (sqlite3* db, const wchar_t* sql, int* cols);
+APIEXPORT long           WINAPI sqlite_query2       (const wchar_t* db_filename, const wchar_t* sql, int* cols);
 APIEXPORT BOOL           WINAPI sqlite_reset        (int handle);
 APIEXPORT BOOL           WINAPI sqlite_bind_int     (int handle, int col, int bind_value);
 APIEXPORT BOOL           WINAPI sqlite_bind_int64   (int handle, int col, __int64 bind_value);
@@ -63,6 +63,7 @@ APIEXPORT BOOL           WINAPI sqlite_bind_null    (int handle, int col);
 APIEXPORT int            WINAPI sqlite_bind_param_count(int handle);
 APIEXPORT int            WINAPI sqlite_bind_param_index(int handle, const wchar_t* param_name);
 APIEXPORT int            WINAPI sqlite_step         (int handle);
+APIEXPORT int            WINAPI sqlite_get_col_type (int handle, int col);
 APIEXPORT const wchar_t* WINAPI sqlite_get_col      (int handle, int col);
 APIEXPORT int            WINAPI sqlite_get_col_int  (int handle, int col);
 APIEXPORT __int64        WINAPI sqlite_get_col_int64(int handle, int col);
