@@ -121,7 +121,7 @@ struct SQLite
 
   int           ErrCode() const                     { return sqlite_errcode(m_db);               }
   string        ErrMsg()  const                     { return sqlite_errmsg(m_db);                }
-  
+
   int           BeginTransaction()                  { return ExecDDL("BEGIN TRANSACTION");       }
   int           EndTransaction(bool commit=true)    { return ExecDDL(commit?"COMMIT":"ROLLBACK");}
 
