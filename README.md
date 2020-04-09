@@ -87,6 +87,8 @@ void Test(string path_to_dbfile) {
 
   query = db.Prepare("INSERT INTO balance (date,balance,equity,free_margin)"
                      "VALUES (?,?,?,?)");
+  if (!query)
+    PrintFormat("Error parsing query: (%d) %s", db.ErrCode(), db.ErrMsg()
   int col=0;
 	query.Reset();
 	query.Bind(++col, TimeLocal());
@@ -94,7 +96,9 @@ void Test(string path_to_dbfile) {
 	query.Bind(++col, AccountEquity());
 	query.Bind(++col, AccountFreeMargin());
 	if (!upd_query.Exec())
-		PrintFormat("Failed to insert update record (date=%d): (%d) %s", date, db.ErrCode(), db.ErrMsg());
+		PrintFormat("Failed to insert update record: (%d) %s", db.ErrCode(), db.ErrMsg());
+
+  delete query;
 }
 ```
 
