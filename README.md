@@ -16,26 +16,69 @@ For pre-600 builds use dll and header from tag https://github.com/Shmuma/sqlite3
     * See the "Terminal data path" section below
 4. In your EA/Indicator/Script, add following include
 
-    ```cpp
-    #include <sqlite.mqh>
-    ```
+```cpp
+#include <sqlite.mqh>
+```
 5. Add the following code
 
-   ```cpp
-    int OnInit()
-    {
-        if (!sqlite_init()) {
-            return INIT_FAILED;
-        }
+```cpp
 
-        return INIT_SUCCEEDED;
-    }
+void Test(string path_to_dbfile) {
+  SQLite db;
+  if (!db.OpenReadOnly(path_to_dbfile)) {
+    Alert(StringFormat("Cannot open database %s: %s", path_to_dbfile, db.ErrMsg()));
+    return;
+  }
 
-    void OnDeinit(const int reason)
-    {
-        sqlite_finalize();
-    }
-    ```
+  string sql = StringFormat(
+                  "SELECT "
+                  "  ticket,ts_open,lots,px_open,sl,tp,ts_close,px_close,"
+                  "  magic,fees,swap,profit,comment,type "
+                  "FROM trade "
+                  "WHERE symbol like '%s%%' and type < 2 "
+                  "ORDER BY ts_open",
+                  _Symbol
+               );
+  
+  SQLiteQuery* query = db.Prepare(sql);
+  if (!query) {
+    Alert(StringFormat("Invalid query: %s", db.ErrMsg()));
+    return;
+  }
+
+  int pip_points = PipPoints(_Symbol);
+  int count      = 0;
+  int tzoff      = (int)(TimeCurrent()-TimeGMT());
+
+  for(; query.Next() == SQLITE_ROW; ++count) {
+    int      ticket   = query.GetInt(0);
+    datetime ts_open  = query.GetDatetime(1)+tzoff;
+    double   lots     = query.GetDouble(2);
+    double   px_open  = query.GetDouble(3);
+    double   sl       = query.GetDouble(4);
+    double   tp       = query.GetDouble(5);
+    datetime ts_close = query.GetDatetime(6)+tzoff;
+    double   px_close = query.GetDouble(7);
+    double   fees     = query.GetDouble(9);
+    double   swap     = query.GetDouble(10);
+    double   profit   = query.GetDouble(11);
+    string   comment  = query.GetString(12);
+    int      type     = query.GetInt(13);
+
+    double   tot_prof = fees+swap+profit;
+    double   pips     = MathAbs(px_close-px_open)/_Point/pip_points;
+
+    string   side     = type < 1 ? "buy" : "sell";
+    PrintFormat("#%d %s %.2f at %.5f close at %.5f (%.1fp) %s $%.2f%s"),
+                ticket, side, lots,
+                px_open, px_close, pips,
+                tot_prof >= 0 ? "profit" : "loss", tot_prof,
+                StringLen(comment) ? "" : ", cmt="+comment);
+  }
+
+  delete query;
+}
+```
 6. sqlite wrapper functions
 
 ## Database file
