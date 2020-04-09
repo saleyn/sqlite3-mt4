@@ -77,6 +77,24 @@ void Test(string path_to_dbfile) {
   }
 
   delete query;
+
+  int res = db.ExecDDL(StringFormat(
+                "INSERT INTO balance (date,balance,equity,free_margin)"
+                "VALUES (%d,%.2f,%.2f,%.2f)",
+                TimeLocal(), AccountBalance(), AccountEquity(), AccountFreeMargin()));
+  if (res != SQLITE_OK)
+    PrintFormat("Couldn't write balance record to database: (%d) %s", db.ErrCode(), db.ErrMsg());
+
+  query = db.Prepare("INSERT INTO balance (date,balance,equity,free_margin)"
+                     "VALUES (?,?,?,?)");
+  int col=0;
+	query.Reset();
+	query.Bind(++col, TimeLocal());
+	query.Bind(++col, AccountBalance());
+	query.Bind(++col, AccountEquity());
+	query.Bind(++col, AccountFreeMargin());
+	if (!upd_query.Exec())
+		PrintFormat("Failed to insert update record (date=%d): (%d) %s", date, db.ErrCode(), db.ErrMsg());
 }
 ```
 
