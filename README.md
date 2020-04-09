@@ -19,7 +19,7 @@ For pre-600 builds use dll and header from tag https://github.com/Shmuma/sqlite3
 ```cpp
 #include <sqlite.mqh>
 ```
-5. Add the following code
+5. Here is a "real-life" example of reading trade records in MT4 from a DB file:
 
 ```cpp
 
@@ -79,7 +79,6 @@ void Test(string path_to_dbfile) {
   delete query;
 }
 ```
-6. sqlite wrapper functions
 
 ## Database file
 
@@ -99,12 +98,3 @@ TERMINAL_DATA_PATH can be known by the following instruction.
 
 Many sample scripts in under ``MQL4/Scripts``.
 
-## Precautions
-### Argument mess
-
-MT4 build 610 has a weird bug when dll function with two string arguments gets corrupted when both values are variables. In that case, inside dll, second argument is the same as the first. In sqlite-wrapper two routines are affected: sqlite_exec and sqlite_table_exists. The simple temparary workaround of this (I hope it will be fixed in latest MT4) is to add empty string to a second argument, for examlpe:
-```
-bool do_check_table_exists (string db, string table)
-{
-    int res = sqlite_table_exists (db, table + "");
-```
