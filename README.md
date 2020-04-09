@@ -90,13 +90,13 @@ void Test(string path_to_dbfile) {
   if (!query)
     PrintFormat("Error parsing query: (%d) %s", db.ErrCode(), db.ErrMsg()
   int col=0;
-	query.Reset();
-	query.Bind(++col, TimeLocal());
-	query.Bind(++col, AccountBalance());
-	query.Bind(++col, AccountEquity());
-	query.Bind(++col, AccountFreeMargin());
-	if (!upd_query.Exec())
-		PrintFormat("Failed to insert update record: (%d) %s", db.ErrCode(), db.ErrMsg());
+  query.Reset();
+  query.Bind(++col, TimeLocal());
+  query.Bind(++col, AccountBalance());
+  query.Bind(++col, AccountEquity());
+  query.Bind(++col, AccountFreeMargin());
+  if (!upd_query.Exec())
+    PrintFormat("Failed to insert update record: (%d) %s", db.ErrCode(), db.ErrMsg());
 
   delete query;
 }
