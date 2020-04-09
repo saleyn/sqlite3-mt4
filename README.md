@@ -1,7 +1,9 @@
-sqlite3-mt4-wrapper
-===================
+sqlite3-mt4-wrapper - An sqlite3 binding for MT4,5
+==================================================
 
-Wrapper DLL for sqlite3 usage from MT4
+This fork is non-backward compatible with the master.
+It contains many enhancements and bug fixes.
+
 
 ## Howto
 
