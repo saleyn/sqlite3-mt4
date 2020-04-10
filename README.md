@@ -17,13 +17,12 @@ For pre-600 builds use dll and header from tag https://github.com/Shmuma/sqlite3
     * See the "Terminal data path" section below
 4. In your EA/Indicator/Script, add following include
 
-```mql
+```cpp
 #include <sqlite.mqh>
 ```
 5. Here is a "real-life" example of reading trade records in MT4 from a DB file:
 
-```mql
-
+```cpp
 void Test(string path_to_dbfile) {
   SQLite db;
   if (!db.OpenReadOnly(path_to_dbfile)) {
