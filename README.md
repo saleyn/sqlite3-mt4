@@ -24,7 +24,7 @@ MQL5/Include/sqlite.mqh
 MQL5/Libraries/MQT/mqt-sqlite3.x64.dll
 ```
 
-3. In your EA/Indicator/Script, add following include
+3. In your EA/Indicator/Script, add the following include file:
 
 ```cpp
 #include <sqlite.mqh>
