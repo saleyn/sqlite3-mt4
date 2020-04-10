@@ -12,16 +12,17 @@ For pre-600 builds use dll and header from tag https://github.com/Shmuma/sqlite3
 
 1. Download [zip of master](https://github.com/Shmuma/sqlite3-mt4-wrapper/archive/master.zip)
 2. Extract it
-3. Copy all contents under ``MQL4`` directory, to ``<TERMINAL_DATA_PATH>/MQL4``
+3. Copy all contents under ``MQL`` directory, to ``<TERMINAL_DATA_PATH>/MQL{4,5}`` (depending
+   on use of MT4 or MT5 terminal.
     * See the "Terminal data path" section below
 4. In your EA/Indicator/Script, add following include
 
-```cpp
+```mql
 #include <sqlite.mqh>
 ```
 5. Here is a "real-life" example of reading trade records in MT4 from a DB file:
 
-```cpp
+```mql
 
 void Test(string path_to_dbfile) {
   SQLite db;
