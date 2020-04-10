@@ -10,17 +10,26 @@ It contains many enhancements and bug fixes.
 **NOTICE: This instruction is only for MT4 build 600 or later!**
 For pre-600 builds use dll and header from tag https://github.com/Shmuma/sqlite3-mt4-wrapper/tree/pre-600
 
-1. Download [zip of master](https://github.com/Shmuma/sqlite3-mt4-wrapper/archive/master.zip)
-2. Extract it
-3. Copy all contents under ``MQL`` directory, to ``<TERMINAL_DATA_PATH>/MQL{4,5}`` (depending
-   on use of MT4 or MT5 terminal.
-    * See the "Terminal data path" section below
-4. In your EA/Indicator/Script, add following include
+1. Download [latest release](https://github.com/saleyn/sqlite3-mt4-wrapper/releases)
+2. Follow instructions in the release to install files in the ``MQL`` sandbox directory,
+   ``<TERMINAL_DATA_PATH>/MQL{4,5}`` (depending on use of MT4 or MT5 terminal).
+MT4's:
+```
+MQL4/Include/sqlite.mqh
+MQL4/Libraries/MQT/mqt-sqlite3.x86.dll
+```
+and MT5's:
+```
+MQL5/Include/sqlite.mqh
+MQL5/Libraries/MQT/mqt-sqlite3.x64.dll
+```
+
+3. In your EA/Indicator/Script, add following include
 
 ```cpp
 #include <sqlite.mqh>
 ```
-5. Here is a "real-life" example of reading trade records in MT4 from a DB file:
+4. Here is a "real-life" example of reading trade records in MT4 from a DB file:
 
 ```cpp
 void Test(string path_to_dbfile) {
@@ -110,13 +119,12 @@ If you specify a full path as database filename, it's used.
 
 ## Terminal data path
 
-TERMINAL_DATA_PATH can be known by the following instruction.
+TERMINAL_DATA_PATH is the location of MetaTrader's sandbox directory that can be
+obtained by the following steps:
 
 1. Open MT4
 2. Open [File] menu
 3. Click "Open Data Folder"
 
 ## Sample
-
-Many sample scripts in under ``MQL4/Scripts``.
 
