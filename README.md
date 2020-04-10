@@ -1,9 +1,13 @@
 sqlite3-mt4-wrapper - An sqlite3 binding for MT4,5
 ==================================================
 
-This fork is non-backward compatible with the master.
-It contains many enhancements and bug fixes.
-
+This is a non-backward compatible fork with the original author's
+[repository](https://github.com/Shmuma/sqlite3-mt4-wrapper).
+It is written in C++ and contains many enhancements and bug fixes
+and is maintained separately from the origin.  If you are happy
+with the original C implementation, you should use the other
+project, but if you need an object-oriented library that is
+stable and tested, use this one.
 
 ## Howto
 
