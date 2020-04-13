@@ -1,5 +1,5 @@
-sqlite3-mt4-wrapper - An sqlite3 binding for MT4,5
-==================================================
+sqlite3-mt4 - An sqlite3 binding for MT4,5
+==========================================
 
 This is a non-backward compatible fork with the original author's
 [repository](https://github.com/Shmuma/sqlite3-mt4-wrapper).
