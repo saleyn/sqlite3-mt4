@@ -14,7 +14,7 @@ target_compile_definitions(mqt-sqlite3 PUBLIC _USRDLL _WINDLL SQLITE3WRAPPER_EXP
 target_link_libraries(mqt-sqlite3 Shlwapi)
 set_target_properties(mqt-sqlite3 PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 if(WIN32)
-  if (CMAKE_CL_64 OR CMAKE_GENERATOR_PLATFORM EQUAL "x64")
+  if (CMAKE_CL_64 OR (CMAKE_GENERATOR_PLATFORM EQUAL "x64") OR MINGW)
     MESSAGE("==> 64 bit build")
     set_target_properties(mqt-sqlite3 PROPERTIES SUFFIX ".x64.dll")
   else()

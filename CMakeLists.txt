@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 
-set( MSVC_INCREMENTAL_YES_FLAG "/INCREMENTAL:NO")
+if (NOT MINGW)
+  set( MSVC_INCREMENTAL_YES_FLAG "/INCREMENTAL:NO")
+endif()
 
 project(sqlite3 VERSION 1.0)
 
@@ -8,7 +10,7 @@ project(sqlite3 VERSION 1.0)
 # CMAKE options customization
 #===============================================================================
 OPTION(NO_MQT_LM OFF)
-set(CMAKE_SYSTEM_PROCESSOR "i686")
+#set(CMAKE_SYSTEM_PROCESSOR "i686")
 set(CMAKE_CXX_STANDARD 17)
 
 if (NOT CMAKE_INSTALL_PREFIX)
@@ -34,11 +36,12 @@ if (WIN32)
 
 endif()
 
-add_compile_options(/wd26451 /wd6011 /wd4244)
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO" )
+if (NOT MINGW)
+  add_compile_options(/wd26451 /wd6011 /wd4244)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO" )
+endif()
 
 #-------------------------------------------------------------------------------
 # Target projects:
 #-------------------------------------------------------------------------------
 add_subdirectory(src)
-
