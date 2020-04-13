@@ -11,10 +11,7 @@ stable and tested, use this one.
 
 ## Howto
 
-**NOTICE: This instruction is only for MT4 build 600 or later!**
-For pre-600 builds use dll and header from tag https://github.com/Shmuma/sqlite3-mt4-wrapper/tree/pre-600
-
-1. Download [latest release](https://github.com/saleyn/sqlite3-mt4-wrapper/releases)
+1. Download [latest release](https://github.com/saleyn/sqlite3-mt4/releases)
 2. Follow instructions in the release to install files in the ``MQL`` sandbox directory,
    ``<TERMINAL_DATA_PATH>/MQL{4,5}`` (depending on use of MT4 or MT5 terminal).
 MT4's:
